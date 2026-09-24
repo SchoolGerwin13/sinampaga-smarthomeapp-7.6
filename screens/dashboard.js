@@ -3,8 +3,31 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 import styles from "../styles/styles.js";
+import { useIoT } from "../context/IoTContext";
 
 export default function DashboardScreen({ navigation }) {
+  const {
+    devices,
+    sensorData,
+    sensorLoading,
+  } = useIoT();
+
+  const light = devices.find(
+    (device) => device.type === "Light"
+  );
+
+  const fan = devices.find(
+    (device) => device.type === "Fan"
+  );
+
+  const door = devices.find(
+    (device) => device.type === "Lock"
+  );
+
+  const airConditioner = devices.find(
+    (device) => device.type === "Air Conditioner"
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar
@@ -17,7 +40,6 @@ export default function DashboardScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
       >
 
-        {/* TITLE */}
         <View style={styles.titleRow}>
 
           <Text style={styles.title}>
@@ -26,8 +48,6 @@ export default function DashboardScreen({ navigation }) {
 
         </View>
 
-
-        {/* TEMPERATURE CARD */}
         <View style={styles.temperatureCard}>
 
           <View style={styles.temperatureIcon}>
@@ -47,11 +67,17 @@ export default function DashboardScreen({ navigation }) {
 
           </View>
 
-
-          <Text style={styles.temperature}>
-            26<Text style={styles.degree}>°</Text>C
-          </Text>
-
+          {sensorLoading ? (
+            <Text style={styles.temperature}>
+              ...
+            </Text>
+          ) : (
+            <Text style={styles.temperature}>
+              {sensorData.temperature}
+              <Text style={styles.degree}>°</Text>
+              C
+            </Text>
+          )}
 
           <Text style={styles.roomName}>
             Living Room
@@ -59,19 +85,23 @@ export default function DashboardScreen({ navigation }) {
 
         </View>
 
-
-        {/* DEVICE GRID */}
         <View style={styles.deviceGrid}>
 
-          {/* LIGHT */}
           <Pressable style={styles.deviceCard}>
-
-            <View style={styles.deviceIconCircle}>
-              <Ionicons
-                name="bulb-outline"
-                size={32}
-                color="#FFFFFF"
-              />
+            <View>
+              {light
+                ? light.status
+                ? <Ionicons
+                  name="bulb"
+                  size={46}
+                  color="#168EEA"
+                  />
+                : <Ionicons
+                  name="bulb-outline"
+                  size={46}
+                  color="#168EEA"
+                  />
+                : "--"}
             </View>
 
             <Text style={styles.deviceName}>
@@ -79,75 +109,107 @@ export default function DashboardScreen({ navigation }) {
             </Text>
 
             <Text style={styles.deviceStatus}>
-              ON
+              {light
+                ? light.status
+                  ? "ON"
+                  : "OFF"
+                : "--"}
             </Text>
-
           </Pressable>
 
-
-          {/* AC */}
           <Pressable style={styles.deviceCard}>
-
-            <Ionicons
-              name="snow-outline"
-              size={48}
-              color="#5DA5D5"
-            />
+            <View>
+                {airConditioner
+                  ? airConditioner.status
+                  ? <Ionicons
+                    name="snow"
+                    size={46}
+                    color="#168EEA"
+                    />
+                  : <Ionicons
+                    name="snow-outline"
+                    size={46}
+                    color="#168EEA"
+                    />
+                  : "--"}
+              </View>
 
             <Text style={styles.deviceName}>
               AC
             </Text>
 
             <Text style={styles.deviceStatus}>
-              24°C
+              {airConditioner
+                ? airConditioner.status
+                  ? "ON"
+                  : "OFF"
+                : "--"}
             </Text>
-
           </Pressable>
 
-
-          {/* DOOR */}
           <Pressable style={styles.deviceCard}>
-
-            <Ionicons
-              name="lock-closed"
-              size={46}
-              color="#168EEA"
-            />
+            {door
+              ? door.status
+                ? <Ionicons
+                  name="lock-closed"
+                  size={46}
+                  color="#168EEA"
+                  />
+                : <Ionicons
+                  name="lock-open-outline"
+                  size={46}
+                  color="#168EEA"
+                  />
+                : "--"}
+            
 
             <Text style={styles.deviceName}>
               Door
             </Text>
 
             <Text style={styles.deviceStatus}>
-              LOCKED
+              {door
+                ? door.status
+                  ? "LOCKED"
+                  : "UNLOCKED"
+                : "--"}
             </Text>
-
           </Pressable>
 
 
-          {/* CAMERA */}
+          {/* FAN */}
           <Pressable style={styles.deviceCard}>
-
-            <Ionicons
-              name="camera"
-              size={46}
-              color="#F5A623"
-            />
+            <View>
+              {fan
+                ? fan.status
+                ? <Ionicons
+                  name="aperture"
+                  size={46}
+                  color="#168EEA"
+                  />
+                : <Ionicons
+                  name="aperture-outline"
+                  size={46}
+                  color="#168EEA"
+                  />
+                : "--"}
+            </View>
 
             <Text style={styles.deviceName}>
-              Camera
+              Fan
             </Text>
 
             <Text style={styles.deviceStatus}>
-              ON
+              {fan
+                ? fan.status
+                  ? "ON"
+                  : "OFF"
+                : "--"}
             </Text>
-
           </Pressable>
 
         </View>
-
       </ScrollView>
-
     </SafeAreaView>
   );
 }
